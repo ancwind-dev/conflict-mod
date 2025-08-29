@@ -1,10 +1,7 @@
 package com.conflict.conflict;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,64 +11,49 @@ import net.minecraftforge.network.PacketDistributor;
 public class CommonEvents {
 
     /**
-     * Показываем меню выбора фракции, если игрок ещё не выбран.
-     * Иначе — синхронизируем команды с SavedData и ставим режим выживания.
+     * При входе: если фракция не выбрана — открыть меню.
+     * Если выбрана — синхронизировать команды и мгновенно (без мигания) телепортировать к точке спавна,
+     * если она задана. В любом случае режим ставим SURVIVAL.
      */
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
 
-        // На всякий случай создадим команды
+        // гарантируем существование команд
         Scoreboards.ensureTeams();
 
-        // Читаем фракцию из SavedData/команд
         String f = Factions.get(sp);
         if (f == null) {
-            // Новичок — открыть клиентский экран
+            // новичок — открыть экран выбора
             Network.CH.send(PacketDistributor.PLAYER.with(() -> sp), new PacketOpenFactionScreen());
             return;
         }
 
-        // Синхронизируем команды с SavedData (безопасно)
+        // синхронизация с SavedData (безопасная)
         Factions.set(sp, f);
 
-        // Всегда выживание (телепорт при респавне/выборе фракции разрулит позицию)
+        // режим — выживание
         sp.setGameMode(GameType.SURVIVAL);
+
+        // телепорт к точке спавна фракции (если задана)
+        SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f));
     }
 
     /**
-     * Респавн у точки фракции (если задана).
-     * Телепорт откладываем на тик, чтобы гарантировать прогрузку высоты/чанка.
+     * При респавне: телепорт в радиус точки спавна фракции (если задана).
+     * Откладываем на тик — безопаснее по прогрузке.
      */
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
 
-        // Игровой режим держим в выживании
+        // режим — выживание
         sp.setGameMode(GameType.SURVIVAL);
 
         String f = Factions.get(sp);
         if (f == null) return;
 
-        boolean blue = "BLUE".equals(f);
-        BlockPos base = SpawnPoints.get(blue);
-        if (base == null) return; // точки нет — обычный спавн
-
-        // Отложим на 1 тик выполнение телепорта — безопаснее
-        sp.server.execute(() -> {
-            ServerLevel lvl = sp.serverLevel();
-            int r = Math.max(0, SpawnPoints.radius(blue));
-            BlockPos target = base.offset(
-                    sp.getRandom().nextInt(r * 2 + 1) - r,
-                    0,
-                    sp.getRandom().nextInt(r * 2 + 1) - r
-            );
-            BlockPos safe = lvl.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, target);
-            sp.teleportTo(lvl,
-                    safe.getX() + 0.5,
-                    safe.getY() + 0.2,
-                    safe.getZ() + 0.5,
-                    sp.getYRot(), sp.getXRot());
-        });
+        // отложим на тик, чтобы мир успел прогрузиться
+        sp.server.execute(() -> SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f)));
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -15,11 +16,12 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class SpawnCommand {
+
     public static void register(CommandDispatcher<CommandSourceStack> d){
         d.register(Commands.literal("spawnpt")
                 .requires(src -> src.hasPermission(2)) // админ
 
-                // /spawnpt set <blue|red> <radius>  — берём блок, на который смотрит игрок
+                // /spawnpt set <blue|red> <radius>  — взять блок из центра взгляда игрока
                 .then(Commands.literal("set")
                         .then(Commands.argument("team", StringArgumentType.word())
                                 .suggests((c,b)->{ b.suggest("blue"); b.suggest("red"); return b.buildFuture(); })
@@ -32,21 +34,23 @@ public class SpawnCommand {
                                             }
                                             BlockPos pos = raycastBlock(sp, 30.0);
                                             if (pos == null){
-                                                src.sendFailure(Component.literal("Посмотри на блок (<=30 блоков)"));
+                                                src.sendFailure(Component.literal("Посмотри на любой блок на расстоянии ≤30"));
                                                 return 0;
                                             }
                                             boolean blue = "blue".equalsIgnoreCase(StringArgumentType.getString(ctx, "team"));
                                             int r = IntegerArgumentType.getInteger(ctx, "radius");
-                                            SpawnPoints.set(pos, r, blue);
+                                            ServerLevel lvl = src.getLevel();
+                                            SpawnPoints.set(lvl, pos, r, blue);
                                             src.sendSuccess(() -> Component.literal(
-                                                    "Точка спавна " + (blue ? "BLUE" : "RED") + " = " + pos.toShortString() + ", радиус " + r), true);
+                                                    "Точка спавна " + (blue ? "BLUE" : "RED") +
+                                                            " = " + pos.toShortString() + ", радиус " + r), true);
                                             return 1;
                                         })
                                 )
                         )
                 )
 
-                // /spawnpt set <blue|red> <x> <y> <z> <radius> — по координатам
+                // /spawnpt set <blue|red> <x> <y> <z> <radius> — задать координатами
                 .then(Commands.literal("set")
                         .then(Commands.argument("team", StringArgumentType.word())
                                 .suggests((c,b)->{ b.suggest("blue"); b.suggest("red"); return b.buildFuture(); })
@@ -61,9 +65,11 @@ public class SpawnCommand {
                                                                     double z = DoubleArgumentType.getDouble(ctx, "z");
                                                                     int r    = IntegerArgumentType.getInteger(ctx, "radius");
                                                                     BlockPos pos = BlockPos.containing(x, y, z);
-                                                                    SpawnPoints.set(pos, r, blue);
+                                                                    ServerLevel lvl = ctx.getSource().getLevel();
+                                                                    SpawnPoints.set(lvl, pos, r, blue);
                                                                     ctx.getSource().sendSuccess(() -> Component.literal(
-                                                                            "Точка спавна " + (blue ? "BLUE" : "RED") + " = " + pos.toShortString() + ", радиус " + r), true);
+                                                                            "Точка спавна " + (blue ? "BLUE" : "RED") +
+                                                                                    " = " + pos.toShortString() + ", радиус " + r), true);
                                                                     return 1;
                                                                 })
                                                         )
@@ -79,11 +85,14 @@ public class SpawnCommand {
                                 .suggests((c,b)->{ b.suggest("blue"); b.suggest("red"); return b.buildFuture(); })
                                 .executes(ctx -> {
                                     boolean blue = "blue".equalsIgnoreCase(StringArgumentType.getString(ctx, "team"));
-                                    BlockPos p = SpawnPoints.get(blue);
-                                    int r = SpawnPoints.radius(blue);
-                                    if (p == null) ctx.getSource().sendFailure(Component.literal("Точка спавна " + (blue?"BLUE":"RED") + " не задана"));
-                                    else ctx.getSource().sendSuccess(() -> Component.literal(
-                                            "Точка " + (blue?"BLUE":"RED") + ": " + p.toShortString() + " (r=" + r + ")"), false);
+                                    ServerLevel lvl = ctx.getSource().getLevel();
+                                    BlockPos p = SpawnPoints.get(lvl, blue);
+                                    int r = SpawnPoints.radius(lvl, blue);
+                                    if (p == null)
+                                        ctx.getSource().sendFailure(Component.literal("Точка спавна " + (blue?"BLUE":"RED") + " не задана"));
+                                    else
+                                        ctx.getSource().sendSuccess(() -> Component.literal(
+                                                "Точка " + (blue?"BLUE":"RED") + ": " + p.toShortString() + " (r=" + r + ")"), false);
                                     return 1;
                                 })
                         )
@@ -95,8 +104,10 @@ public class SpawnCommand {
                                 .suggests((c,b)->{ b.suggest("blue"); b.suggest("red"); return b.buildFuture(); })
                                 .executes(ctx -> {
                                     boolean blue = "blue".equalsIgnoreCase(StringArgumentType.getString(ctx, "team"));
-                                    SpawnPoints.clear(blue);
-                                    ctx.getSource().sendSuccess(() -> Component.literal("Точка спавна " + (blue?"BLUE":"RED") + " очищена"), true);
+                                    ServerLevel lvl = ctx.getSource().getLevel();
+                                    SpawnPoints.clear(lvl, blue);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                            "Точка спавна " + (blue?"BLUE":"RED") + " очищена"), true);
                                     return 1;
                                 })
                         )

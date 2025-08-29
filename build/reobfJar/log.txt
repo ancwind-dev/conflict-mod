@@ -135,6 +135,7 @@ Reading Input: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemod
 Adding input to inheritance map
 Processing entries
 Conflicting propagated mapping for com/conflict/conflict/FactionData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/conflict/conflict/SpawnPointsData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/onClose()V from net/minecraft/client/gui/screens/Screen/onClose()V: onClose -> m_7379_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
@@ -166,6 +167,6 @@ Writing Output: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemo
   com/conflict/conflict/PacketOpenFactionScreen.class
   com/conflict/conflict/Scoreboards.class
   com/conflict/conflict/SpawnCommand.class
-  com/conflict/conflict/SpawnHandler.class
   com/conflict/conflict/SpawnPoints.class
+  com/conflict/conflict/SpawnPointsData.class
   pack.mcmeta
