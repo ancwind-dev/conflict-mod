@@ -17,6 +17,9 @@ public class Network {
                 PacketChooseFaction::encode, PacketChooseFaction::decode, PacketChooseFaction::handle);
         CH.registerMessage(1, PacketOpenFactionScreen.class,
                 PacketOpenFactionScreen::encode, PacketOpenFactionScreen::decode, PacketOpenFactionScreen::handle);
+        // + ID подбери следующий свободный
+        CH.registerMessage(2, PacketGameState.class,
+                PacketGameState::encode, PacketGameState::decode, PacketGameState::handle);
     }
 }
 
