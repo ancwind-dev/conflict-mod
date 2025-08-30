@@ -134,12 +134,12 @@ Adding Libraries to Inheritance
 Reading Input: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemode\conflict\Conflict\build\libs\conflict-0.1.1.jar
 Adding input to inheritance map
 Processing entries
-Conflicting propagated mapping for com/conflict/conflict/FactionData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
 Conflicting propagated mapping for com/conflict/conflict/GameSaved/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/conflict/conflict/FactionData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/conflict/conflict/OreNodesData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/conflict/conflict/FactionScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
-Conflicting propagated mapping for com/conflict/conflict/FactionScreen/onClose()V from net/minecraft/client/gui/screens/Screen/onClose()V: onClose -> m_7379_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
-Conflicting propagated mapping for com/conflict/conflict/FactionScreen/shouldCloseOnEsc()Z from net/minecraft/client/gui/screens/Screen/shouldCloseOnEsc()Z: shouldCloseOnEsc -> m_6913_
 Conflicting propagated mapping for com/conflict/conflict/SpawnPointsData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
 Conflicting propagated mapping for net/minecraft/world/entity/LivingEntity/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V from net/minecraft/world/entity/player/Player/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V: lambda$addAdditionalSaveData$3 -> m_219754_
 Adding extras
@@ -167,7 +167,11 @@ Writing Output: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemo
   com/conflict/conflict/FlagPositions.class
   com/conflict/conflict/GameLogic.class
   com/conflict/conflict/GameSaved.class
+  com/conflict/conflict/MineCommand.class
+  com/conflict/conflict/MineHandler.class
   com/conflict/conflict/Network.class
+  com/conflict/conflict/OreNodesData$Node.class
+  com/conflict/conflict/OreNodesData.class
   com/conflict/conflict/PacketChooseFaction$F.class
   com/conflict/conflict/PacketChooseFaction.class
   com/conflict/conflict/PacketGameState.class

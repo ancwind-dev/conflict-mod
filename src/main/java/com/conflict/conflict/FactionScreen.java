@@ -1,44 +1,81 @@
 package com.conflict.conflict;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 public class FactionScreen extends Screen {
-    protected FactionScreen() { super(Component.literal("Выбор фракции")); }
+
+    private Button blueBtn;
+    private Button redBtn;
+
+    protected FactionScreen() {
+        super(Component.literal("Выбор фракции"));
+    }
 
     @Override
     protected void init() {
-        int cx = width / 2;
-        int cy = height / 2;
+        int w = this.width;
+        int h = this.height;
 
-        // Слева ВСЕГДА BLUE
-        addRenderableWidget(Button.builder(Component.literal("BLUE"), b -> {
-            Network.CH.sendToServer(new PacketChooseFaction(PacketChooseFaction.F.BLUE));
-            // Не закрываем насильно — сервер сам снимет SPECTATOR и добавит в команду
-            onClose();
-        }).bounds(cx - 110, cy - 10, 100, 20).build());
+        // Размеры и позиции кнопок
+        int btnW = 150;
+        int btnH = 30;
+        int gap = 20;
+        int y = h / 2;
 
-        // Справа ВСЕГДА RED
-        addRenderableWidget(Button.builder(Component.literal("RED"), b -> {
-            Network.CH.sendToServer(new PacketChooseFaction(PacketChooseFaction.F.RED));
-            onClose();
-        }).bounds(cx + 10, cy - 10, 100, 20).build());
+        blueBtn = Button.builder(
+                        Component.literal("BLUE").withStyle(ChatFormatting.BLUE, ChatFormatting.BOLD),
+                        b -> {
+                            Network.CH.sendToServer(new PacketChooseFaction(PacketChooseFaction.F.BLUE));
+                            this.onClose();
+                        })
+                .pos(w / 2 - btnW - gap, y)
+                .size(btnW, btnH)
+                .build();
+
+        redBtn = Button.builder(
+                        Component.literal("RED").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
+                        b -> {
+                            Network.CH.sendToServer(new PacketChooseFaction(PacketChooseFaction.F.RED));
+                            this.onClose();
+                        })
+                .pos(w / 2 + gap, y)
+                .size(btnW, btnH)
+                .build();
+
+        addRenderableWidget(blueBtn);
+        addRenderableWidget(redBtn);
     }
 
-    // затемнение фона
     @Override
-    public void render(net.minecraft.client.gui.GuiGraphics gfx, int mx, int my, float dt) {
-        this.renderBackground(gfx);
-        super.render(gfx, mx, my, dt);
-        gfx.drawCenteredString(this.font, "Выберите фракцию", this.width/2, this.height/2 - 30, 0xFFFFFF);
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTicks) {
+        // Полупрозрачный фон
+        RenderSystem.disableDepthTest();
+        g.fill(0, 0, this.width, this.height, 0xAA000000);
+
+        // Заголовок
+        String title = "Выберите свою фракцию";
+        int titleW = this.font.width(title);
+        g.drawString(this.font, title,
+                (this.width - titleW) / 2,
+                this.height / 2 - 60,
+                0xFFFFFF, true);
+
+        // Подписи под кнопками
+        g.drawString(this.font, "Синие - КМП США", blueBtn.getX(), blueBtn.getY() + 40, 0xAAAAFF, false);
+        g.drawString(this.font, "Красные — ВС РФ", redBtn.getX(), redBtn.getY() + 40, 0xFFAAAA, false);
+
+        super.render(g, mouseX, mouseY, partialTicks);
+        RenderSystem.enableDepthTest();
     }
 
-    // Запрещаем закрытие ESC, чтобы игрок не уходил без выбора
-    @Override public boolean shouldCloseOnEsc() { return false; }
-    @Override public void onClose() {
-        // Ничего не делаем — окно всё равно закроется вызовом setScreen(null),
-        // но если ESC — shouldCloseOnEsc() вернёт false
-        super.onClose();
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.conflict.conflict;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -15,13 +16,17 @@ public class DamageGuard {
         Entity srcEnt = e.getSource().getEntity();
         if (!(srcEnt instanceof Player attacker)) return;
 
-        // обе стороны — игроки; если в одной фракции — отменяем урон
-        var v = (net.minecraft.server.level.ServerPlayer) victim;
-        var a = (net.minecraft.server.level.ServerPlayer) attacker;
+        ServerPlayer v = (ServerPlayer) victim;
+        ServerPlayer a = (ServerPlayer) attacker;
+
+        // если FF включён — ничего не блокируем
+        var gs = GameSaved.get(v.serverLevel());
+        if (gs.ffEnabled) return;
+
         String fv = Factions.get(v);
         String fa = Factions.get(a);
         if (fv != null && fv.equals(fa)) {
-            e.setCanceled(true);
+            e.setCanceled(true); // блокируем урон по союзнику
         }
     }
 }

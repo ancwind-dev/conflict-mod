@@ -10,9 +10,11 @@ public class CommandEvents {
     public static void onRegisterCommands(net.minecraftforge.event.RegisterCommandsEvent e){
         SpawnCommand.register(e.getDispatcher());
         FactionCommand.register(e.getDispatcher());
-        ConflictAdminCommand.register(e.getDispatcher()); // ← ДОБАВИЛИ
+        ConflictAdminCommand.register(e.getDispatcher());
+        MineCommand.register(e.getDispatcher()); // ← добавили
     }
 }
+
 
 
 

@@ -9,9 +9,12 @@ public class GameSaved extends SavedData {
 
     public int blue = 0;
     public int red  = 0;
-    public int target = 50;     // очков до победы
-    public int timerSec = 60*60; // по умолчанию 60 минут
+    public int target = 50;
+    public int timerSec = 60*60;
     public boolean running = false;
+
+    // NEW:
+    public boolean ffEnabled = false; // дружеский огонь: по умолчанию выключен
 
     public static GameSaved get(ServerLevel lvl){
         return lvl.getDataStorage().computeIfAbsent(GameSaved::load, GameSaved::new, NAME);
@@ -24,6 +27,7 @@ public class GameSaved extends SavedData {
         d.target = tag.getInt("target");
         d.timerSec = tag.getInt("timer");
         d.running  = tag.getBoolean("running");
+        d.ffEnabled = tag.getBoolean("ffEnabled"); // NEW
         if (d.target <= 0) d.target = 50;
         if (d.timerSec < 0) d.timerSec = 0;
         return d;
@@ -36,6 +40,7 @@ public class GameSaved extends SavedData {
         tag.putInt("target", target);
         tag.putInt("timer", timerSec);
         tag.putBoolean("running", running);
+        tag.putBoolean("ffEnabled", ffEnabled); // NEW
         return tag;
     }
 
