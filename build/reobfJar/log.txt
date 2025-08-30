@@ -159,7 +159,6 @@ Writing Output: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemo
   com/conflict/
   com/conflict/conflict/
   com/conflict/conflict/ChatFormatter.class
-  com/conflict/conflict/ClientFirstPersonArms.class
   com/conflict/conflict/ClientHud.class
   com/conflict/conflict/ClientLayers.class
   com/conflict/conflict/ClientSkins.class
