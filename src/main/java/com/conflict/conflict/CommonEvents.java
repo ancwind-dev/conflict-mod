@@ -10,50 +10,49 @@ import net.minecraftforge.network.PacketDistributor;
 @Mod.EventBusSubscriber(modid = ConflictMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEvents {
 
-    /**
-     * При входе: если фракция не выбрана — открыть меню.
-     * Если выбрана — синхронизировать команды и мгновенно (без мигания) телепортировать к точке спавна,
-     * если она задана. В любом случае режим ставим SURVIVAL.
-     */
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
 
-        // гарантируем существование команд
+        // на всякий случай — существование команд в табло
         Scoreboards.ensureTeams();
 
         String f = Factions.get(sp);
         if (f == null) {
             // новичок — открыть экран выбора
             Network.CH.send(PacketDistributor.PLAYER.with(() -> sp), new PacketOpenFactionScreen());
+            // новенькому сразу отсылаем скины всех остальных
+            SkinBroadcaster.syncAllTo(sp);
             return;
         }
 
-        // синхронизация с SavedData (безопасная)
+        // синхронизируем команду (складём в SavedData + в табло)
         Factions.set(sp, f);
 
         // режим — выживание
         sp.setGameMode(GameType.SURVIVAL);
 
-        // телепорт к точке спавна фракции (если задана)
+        // телепорт к базе (если задана)
         SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f));
+
+        // всем рассказать, какой скин у вошедшего
+        SkinBroadcaster.sendFor(sp);
+        // и вошедшему — скины остальных
+        SkinBroadcaster.syncAllTo(sp);
     }
 
-    /**
-     * При респавне: телепорт в радиус точки спавна фракции (если задана).
-     * Откладываем на тик — безопаснее по прогрузке.
-     */
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
 
-        // режим — выживание
         sp.setGameMode(GameType.SURVIVAL);
 
         String f = Factions.get(sp);
         if (f == null) return;
 
-        // отложим на тик, чтобы мир успел прогрузиться
-        sp.server.execute(() -> SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f)));
+        sp.server.execute(() -> {
+            SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f));
+            // (киты будем выдавать позже)
+        });
     }
 }

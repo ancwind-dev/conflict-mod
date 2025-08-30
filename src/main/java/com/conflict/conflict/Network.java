@@ -20,6 +20,10 @@ public class Network {
         // + ID подбери следующий свободный
         CH.registerMessage(2, PacketGameState.class,
                 PacketGameState::encode, PacketGameState::decode, PacketGameState::handle);
+        // следующий свободный ID
+        CH.registerMessage(3, PacketSkinUpdate.class,
+                PacketSkinUpdate::encode, PacketSkinUpdate::decode, PacketSkinUpdate::handle);
+
     }
 }
 

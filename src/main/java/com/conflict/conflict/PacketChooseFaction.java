@@ -25,17 +25,16 @@ public class PacketChooseFaction {
             ServerPlayer sp = ctx.getSender();
             if (sp == null) return;
 
-            // 1) фракция из выбора
             String val = (msg.choice == F.BLUE) ? "BLUE" : "RED";
 
-            // 2) сохраняем в SavedData и синхронизируем команды
+            // 1) сохраняем фракцию и синхронизируем команды
             Factions.set(sp, val);
             boolean blue = "BLUE".equals(val);
 
-            // 3) сразу режим выживания
+            // 2) режим игры
             sp.setGameMode(GameType.SURVIVAL);
 
-            // 4) если точка спавна задана — безопасный телепорт; иначе покажем подсказку
+            // 3) телепорт к точке спавна (если задана), иначе покажем подсказку
             ServerLevel lvl = sp.serverLevel();
             if (SpawnPoints.has(lvl, blue)) {
                 SafeTeleport.toTeamSpawn(sp, blue);
@@ -43,6 +42,9 @@ public class PacketChooseFaction {
                 sp.displayClientMessage(Component.literal(
                         "Точка спавна вашей фракции пока не задана. Используйте /spawnpt set ..."), false);
             }
+
+            // 4) РАССЫЛКА СКИНА — ключевой момент
+            SkinBroadcaster.sendFor(sp);
 
             sp.displayClientMessage(Component.literal("Фракция выбрана: " + val), false);
         });

@@ -4,64 +4,65 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.PacketDistributor;
 
 public class FactionCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> d) {
+    public static void register(CommandDispatcher<CommandSourceStack> d){
         d.register(Commands.literal("faction")
-                // /faction get — доступно всем
-                .then(Commands.literal("get")
-                        .requires(src -> true)
-                        .executes(ctx -> {
-                            if (!(ctx.getSource().getEntity() instanceof ServerPlayer sp)) {
-                                ctx.getSource().sendFailure(Component.literal("Команда доступна только игроку"));
-                                return 0;
-                            }
-                            String f = Factions.get(sp);
-                            ctx.getSource().sendSuccess(() ->
-                                    Component.literal("Твоя фракция: " + String.valueOf(f)), false);
-                            return 1;
-                        })
-                )
+                // "/faction" — открыть экран выбора (для себя)
+                .executes(ctx -> {
+                    if (!(ctx.getSource().getEntity() instanceof ServerPlayer sp)) {
+                        ctx.getSource().sendFailure(Component.literal("Только игрок"));
+                        return 0;
+                    }
+                    Network.CH.send(PacketDistributor.PLAYER.with(() -> sp), new PacketOpenFactionScreen());
+                    return 1;
+                })
 
-                // /faction set <BLUE|RED> — только OP
-                .then(Commands.literal("set")
-                        .requires(src -> src.hasPermission(2))
-                        .then(Commands.argument("side", StringArgumentType.word())
-                                .suggests((c, b) -> { b.suggest("BLUE"); b.suggest("RED"); return b.buildFuture(); })
-                                .executes(ctx -> {
-                                    if (!(ctx.getSource().getEntity() instanceof ServerPlayer sp)) {
-                                        ctx.getSource().sendFailure(Component.literal("Команда доступна только игроку"));
-                                        return 0;
-                                    }
-                                    String side = StringArgumentType.getString(ctx, "side").toUpperCase();
-                                    if (!"BLUE".equals(side) && !"RED".equals(side)) {
-                                        ctx.getSource().sendFailure(Component.literal("Используй: BLUE или RED"));
-                                        return 0;
-                                    }
-                                    Factions.set(sp, side); // пишет в SavedData и синкает команды
-                                    ctx.getSource().sendSuccess(() ->
-                                            Component.literal("Фракция установлена: " + side), true);
-                                    return 1;
-                                })
+                // "/faction set <blue|red>" — админом назначить фракцию игроку (опционально)
+                .then(Commands.literal("set").requires(src -> src.hasPermission(2))
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .then(Commands.argument("faction", StringArgumentType.word())
+                                        .suggests((c,b)->{ b.suggest("blue"); b.suggest("red"); return b.buildFuture(); })
+                                        .executes(ctx -> {
+                                            ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                                            String fac = StringArgumentType.getString(ctx, "faction");
+                                            String val = "blue".equalsIgnoreCase(fac) ? "BLUE" : "RED";
+
+                                            Factions.set(target, val);
+                                            // оповещаем клиентов о скине
+                                            SkinBroadcaster.sendFor(target);
+
+                                            ctx.getSource().sendSuccess(() ->
+                                                    Component.literal("Игроку " + target.getGameProfile().getName() +
+                                                            " назначена фракция " + val), true);
+                                            return 1;
+                                        })
+                                )
                         )
                 )
 
-                // /faction reset — только OP (убрать из фракции)
-                .then(Commands.literal("reset")
-                        .requires(src -> src.hasPermission(2))
-                        .executes(ctx -> {
-                            if (!(ctx.getSource().getEntity() instanceof ServerPlayer sp)) {
-                                ctx.getSource().sendFailure(Component.literal("Команда доступна только игроку"));
-                                return 0;
-                            }
-                            Factions.set(sp, null);
-                            ctx.getSource().sendSuccess(() ->
-                                    Component.literal("Фракция сброшена"), true);
-                            return 1;
-                        })
+                // "/faction reset <player>" — СБРОС ФРАКЦИИ (ТО САМОЕ МЕСТО ДЛЯ П.3)
+                .then(Commands.literal("reset").requires(src -> src.hasPermission(2))
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(ctx -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                                    // сбрасываем фракцию (null/NONE — в зависимости от твоей реализации Factions)
+                                    Factions.set(target, null);
+
+                                    // ВАЖНО: после сброса — разослать клиентам, что у игрока скин "NONE"
+                                    SkinBroadcaster.sendFor(target);   // ← ПУНКТ (3)
+
+                                    ctx.getSource().sendSuccess(() ->
+                                                    Component.literal("Фракция игрока " + target.getGameProfile().getName() + " сброшена"),
+                                            true);
+                                    return 1;
+                                })
+                        )
                 )
         );
     }
