@@ -16,8 +16,13 @@ public class PacketChooseFaction {
 
     public PacketChooseFaction(F c) { this.choice = c; }
 
-    public static void encode(PacketChooseFaction m, FriendlyByteBuf buf) { buf.writeEnum(m.choice); }
-    public static PacketChooseFaction decode(FriendlyByteBuf buf) { return new PacketChooseFaction(buf.readEnum(F.class)); }
+    public static void encode(PacketChooseFaction m, FriendlyByteBuf buf) {
+        buf.writeEnum(m.choice);
+    }
+
+    public static PacketChooseFaction decode(FriendlyByteBuf buf) {
+        return new PacketChooseFaction(buf.readEnum(F.class));
+    }
 
     public static void handle(PacketChooseFaction msg, Supplier<NetworkEvent.Context> ctxSup) {
         NetworkEvent.Context ctx = ctxSup.get();
@@ -27,14 +32,14 @@ public class PacketChooseFaction {
 
             String val = (msg.choice == F.BLUE) ? "BLUE" : "RED";
 
-            // 1) сохраняем фракцию и синхронизируем команды
+            // 1) Сохраняем фракцию и табло
             Factions.set(sp, val);
             boolean blue = "BLUE".equals(val);
 
-            // 2) режим игры
+            // 2) Режим выживания
             sp.setGameMode(GameType.SURVIVAL);
 
-            // 3) телепорт к точке спавна (если задана), иначе покажем подсказку
+            // 3) Телепорт к точке (если есть), иначе подсказка
             ServerLevel lvl = sp.serverLevel();
             if (SpawnPoints.has(lvl, blue)) {
                 SafeTeleport.toTeamSpawn(sp, blue);
@@ -43,7 +48,10 @@ public class PacketChooseFaction {
                         "Точка спавна вашей фракции пока не задана. Используйте /spawnpt set ..."), false);
             }
 
-            // 4) РАССЫЛКА СКИНА — ключевой момент
+            // 4) Выдаём КИТ фракции (очистка инвентаря включена)
+            Loadouts.giveFor(sp, blue, true);
+
+            // 5) Разослать клиентам инфо о "скине фракции"
             SkinBroadcaster.sendFor(sp);
 
             sp.displayClientMessage(Component.literal("Фракция выбрана: " + val), false);

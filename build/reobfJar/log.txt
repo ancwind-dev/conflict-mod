@@ -134,8 +134,8 @@ Adding Libraries to Inheritance
 Reading Input: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemode\conflict\Conflict\build\libs\conflict-0.1.2.jar
 Adding input to inheritance map
 Processing entries
-Conflicting propagated mapping for com/conflict/conflict/FactionSkinLayer/render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V from net/minecraft/client/renderer/entity/layers/RenderLayer/render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V: render -> m_6494_
 Conflicting propagated mapping for com/conflict/conflict/GameSaved/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/conflict/conflict/FactionSkinLayer/render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V from net/minecraft/client/renderer/entity/layers/RenderLayer/render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V: render -> m_6494_
 Conflicting propagated mapping for com/conflict/conflict/FactionData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
 Conflicting propagated mapping for com/conflict/conflict/FactionScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
@@ -177,6 +177,7 @@ Writing Output: C:\Users\RobotComp.ru\Documents\Storage\projects\conflict-gamemo
   com/conflict/conflict/FlagPositions.class
   com/conflict/conflict/GameLogic.class
   com/conflict/conflict/GameSaved.class
+  com/conflict/conflict/Loadouts.class
   com/conflict/conflict/MineCommand.class
   com/conflict/conflict/MineHandler.class
   com/conflict/conflict/Network.class

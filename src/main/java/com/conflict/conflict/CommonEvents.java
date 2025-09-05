@@ -1,5 +1,6 @@
 package com.conflict.conflict;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -14,30 +15,32 @@ public class CommonEvents {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
 
-        // на всякий случай — существование команд в табло
+        // Убедимся, что команды в табло существуют
         Scoreboards.ensureTeams();
 
         String f = Factions.get(sp);
         if (f == null) {
-            // новичок — открыть экран выбора
+            // Новичок/без фракции — откроем экран выбора
             Network.CH.send(PacketDistributor.PLAYER.with(() -> sp), new PacketOpenFactionScreen());
-            // новенькому сразу отсылаем скины всех остальных
+
+            // Новенькому сразу отправим скины всех остальных
             SkinBroadcaster.syncAllTo(sp);
             return;
         }
 
-        // синхронизируем команду (складём в SavedData + в табло)
+        // Синхронизируем табло + режим
         Factions.set(sp, f);
-
-        // режим — выживание
         sp.setGameMode(GameType.SURVIVAL);
 
-        // телепорт к базе (если задана)
+        // Телепорт к базе, если задана
         SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f));
 
-        // всем рассказать, какой скин у вошедшего
+        // Выдать КИТ фракции (очищаем инвентарь перед выдачей)
+        Loadouts.giveFor(sp, "BLUE".equals(f), true);
+
+        // Всем — какая у игрока "текстура фракции"
         SkinBroadcaster.sendFor(sp);
-        // и вошедшему — скины остальных
+        // Вошедшему — скины всех остальных
         SkinBroadcaster.syncAllTo(sp);
     }
 
@@ -48,11 +51,16 @@ public class CommonEvents {
         sp.setGameMode(GameType.SURVIVAL);
 
         String f = Factions.get(sp);
-        if (f == null) return;
+        if (f == null) {
+            // Без фракции — просто подскажем выбрать
+            sp.displayClientMessage(Component.literal("Выберите фракцию командой /faction"), false);
+            return;
+        }
 
+        // Переносим на базу и выдаём кит — в главном треде сервера
         sp.server.execute(() -> {
             SafeTeleport.toTeamSpawn(sp, "BLUE".equals(f));
-            // (киты будем выдавать позже)
+            Loadouts.giveFor(sp, "BLUE".equals(f), true);
         });
     }
 }
