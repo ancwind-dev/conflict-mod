@@ -5,7 +5,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 ---
 
-## ✨ Features
+## Features
 
 - **Faction system**  
   - Choose your team (RED or BLUE) on first join.  
@@ -25,7 +25,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 ---
 
-## 🔧 Commands
+## Commands
 
 *(all commands start with `/`)*
 
@@ -54,7 +54,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 ---
 
-## 📥 Installation
+## Installation
 
 1. Install **Minecraft Forge 1.20.1** (recommended build 47.4.x).
 2. Place the `conflict-x.x.x.jar` file in your server and client `mods/` folder.
@@ -63,14 +63,14 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 ---
 
-## 🗂️ Folder Structure
+## Folder Structure
 
 src/main/java/com/conflict/conflict -> Mod source code
 src/main/resources/assets/conflict -> Textures (skins, GUI)
 
 ---
 
-## ⚠️ Notes
+## Notes
 
 - If you run a cracked (offline-mode) server, set `online-mode=false` in `server.properties`.  
   In that case, default Minecraft skins will not load; the mod's custom RED/BLUE skins will still display.
