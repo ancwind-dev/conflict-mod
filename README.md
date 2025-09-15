@@ -58,7 +58,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 1. Install **Minecraft Forge 1.20.1** (recommended build 47.4.x).
 2. Place the `conflict-x.x.x.jar` file in your server and client `mods/` folder.
-3. (Optional) Install **SuperbWarfare** and other weapon/armor mods used in your kits.
+3. (Recommended) Install **SuperbWarfare** and other weapon/armor mods used in your kits.
 4. Start the server and join with the same modpack on your client.
 
 ---
