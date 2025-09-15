@@ -78,6 +78,4 @@ src/main/resources/assets/conflict -> Textures (skins, GUI)
 - Recommended minimum: 4 players for a balanced game.
 
 ---
----
-
 Enjoy the battle and good luck to both teams!  
