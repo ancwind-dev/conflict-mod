@@ -81,4 +81,3 @@ src/main/resources/assets/conflict -> Textures (skins, GUI)
 ---
 
 Enjoy the battle and good luck to both teams!  
-Приятной игры и удачи обеим командам!
