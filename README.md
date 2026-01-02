@@ -7,7 +7,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 
 ## Features
 
-- **Faction system**  
+- **Faction system**
   - Choose your team (RED or BLUE) on first join.  
   - Teams persist across sessions and respawns.
 - **Automatic loadouts**  
