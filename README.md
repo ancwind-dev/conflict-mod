@@ -10,7 +10,7 @@ Players join **RED** or **BLUE** factions, fight for points, and win by reaching
 - **Faction system**
   - Choose your team (RED or BLUE) on first join.  
   - Teams persist across sessions and respawns.
-- **Automatic loadouts**  
+- **Automatic loadouts**
   - Each faction spawns with its own armor, weapons, ammo, food and tools.
 - **Score & timer HUD**  
   - A clean on-screen display shows RED vs BLUE score and the remaining time.
